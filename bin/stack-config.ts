@@ -5,5 +5,8 @@ const environmentConfig: IMtAmplifyAppStackProps = {
     Developer: 'Faruk Ada',
     Application: 'MyTradables.com',
   },
+  githubOwner: 'abc',
+  githubRepository: 'def',
+  githubTokenSecretId: 'ghi',
 };
 export default environmentConfig;

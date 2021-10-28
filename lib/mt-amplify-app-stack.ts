@@ -1,21 +1,30 @@
 import * as cdk from '@aws-cdk/core';
-import * as lambda from '@aws-cdk/aws-lambda';
+import * as amplify from '@aws-cdk/aws-amplify';
+import * as codebuild from '@aws-cdk/aws-codebuild';
 import { IMtAmplifyAppStackProps } from '../bin/stack-environment-types';
 
 class MtAmplifyAppStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props: IMtAmplifyAppStackProps) {
     super(scope, id, props);
 
-    // The code that defines your stack goes here
-
-    // Example lambda
-    new lambda.Function(this, 'boilerplate', {
-      runtime: lambda.Runtime.NODEJS_14_X,
-      code: lambda.Code.fromAsset('dist'),
-      handler: 'index.handler',
-      memorySize: 128,
-      timeout: cdk.Duration.seconds(30),
+    const mtAmplifyApp = new amplify.App(this, 'mytradablesAmplify', {
+      appName: 'MyTradables.com',
+      description: 'Amplify app for mytradables.com',
+      sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
+        owner: props.githubOwner,
+        repository: props.githubRepository,
+        oauthToken: cdk.SecretValue.secretsManager(props.githubTokenSecretId),
+      }),
+      buildSpec: codebuild.BuildSpec.fromSourceFilename('next-amplify.yml'),
     });
+
+    mtAmplifyApp.addCustomRule(amplify.CustomRule.SINGLE_PAGE_APPLICATION_REDIRECT);
+
+    const main = mtAmplifyApp.addBranch('main');
+
+    const domain = mtAmplifyApp.addDomain('mytradables.com');
+    domain.mapRoot(main);
+    domain.mapSubDomain(main, 'www');
   }
 }
 

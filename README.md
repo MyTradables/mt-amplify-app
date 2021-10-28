@@ -1,4 +1,4 @@
-# MyTradables: Amazon Web Services Cloud Development Kit Bootstrap
+# MyTradables: Amplify App
 
 This repository contains a AWS CDK template stack for MyTradables internal use.
 
